@@ -19,7 +19,7 @@ public class WeatherHttpClient {
         try {
             if (duration.equals("forecast")) {
 
-                con = (HttpURLConnection) (new URL(BASE_URL + "forecast?zip="  + location + "&units=imperial" + "&APPID=9bee6df96953e2c756b1dc09df01ef9f")).openConnection();
+                con = (HttpURLConnection) (new URL(BASE_URL + "forecast?zip="  + location + "&units=imperial" + "API KEY HERE")).openConnection();
                 con.setRequestMethod("GET");
                 con.setDoInput(true);
                 con.setDoOutput(true);
@@ -34,7 +34,7 @@ public class WeatherHttpClient {
                 returnVal = buffer.toString();
 
             } else {
-                con = (HttpURLConnection) (new URL(BASE_URL + "weather?zip=" + location + "&units=imperial" + "&APPID=9bee6df96953e2c756b1dc09df01ef9f")).openConnection();
+                con = (HttpURLConnection) (new URL(BASE_URL + "weather?zip=" + location + "&units=imperial" + "API KEY HERE")).openConnection();
                 con.setRequestMethod("GET");
                 con.setDoInput(true);
                 con.setDoOutput(true);
