@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Dalporto Weather</string>
+    <string name="api_key_openweather">9bee6df96953e2c756b1dc09df01ef9f</string>
+    <string name="action_settings">Settings</string>
+</resources>
