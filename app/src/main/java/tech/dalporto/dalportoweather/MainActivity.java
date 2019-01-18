@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         condDescr = findViewById(R.id.condDescr);
         temp = findViewById(R.id.temp);
         hum = findViewById(R.id.hum);
-        press = findViewById(R.id.press);
         windSpeed = findViewById(R.id.windSpeed);
         windDeg = findViewById(R.id.windDeg);
         imgView = findViewById(R.id.condIcon);
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     public void writePreferences() {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("location", city);
-        editor.commit();
+        editor.commit(); // test editor.apply() later
     }
     public void readPreferences() {
         city = sharedPref.getString("location", "");
@@ -110,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
                         String input = String.valueOf(taskEditText.getText());
                         city = input + "," + getApplicationContext().getResources().getConfiguration().locale.getCountry();
                         writePreferences();
-                        //pickView(MainActivity.this);
                         task = new JSONWeatherTask();
                         task.execute(new String[]{city});
                     }
@@ -150,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 condDescr.setText(weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
                 temp.setText("" + Math.round((weather.temperature.getTemp())) + "f");
                 hum.setText("" + weather.currentCondition.getHumidity() + "%");
-                press.setText(getApplicationContext().getResources().getConfiguration().locale.getCountry());
+                //press.setText(getApplicationContext().getResources().getConfiguration().locale.getCountry());
                 windSpeed.setText("" + weather.wind.getSpeed() + " mps");
                 windDeg.setText("" + weather.wind.getDeg() + "�");
             } else {
