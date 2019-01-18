@@ -6,18 +6,22 @@ import tech.dalporto.dalportoweather.model.Weather;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
+
 import com.squareup.picasso.Picasso;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
 
     private TextView cityText;
@@ -28,13 +32,27 @@ public class MainActivity extends Activity {
     private TextView windDeg;
     private TextView hum;
     private ImageView imgView;
-    private String city = "94089,US";
+    private String city = "";
     private JSONWeatherTask task;
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+
+        Context context = this;
+        sharedPref = context.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
+
+        //Intent intent = getIntent();
+        //if (intent.hasExtra("location")) {
+          //  city = intent.getStringExtra("location");
+            //task = new JSONWeatherTask();
+            //task.execute(new String[]{city});
+        //}
 
         cityText = findViewById(R.id.cityText);
         condDescr = findViewById(R.id.condDescr);
@@ -45,7 +63,48 @@ public class MainActivity extends Activity {
         windDeg = findViewById(R.id.windDeg);
         imgView = findViewById(R.id.condIcon);
 
-        showAddItemDialog(this);
+        readPreferences();
+        if (city.equals("")) {
+            showAddItemDialog(this);
+        } else {
+            task = new JSONWeatherTask();
+            task.execute(new String[]{city});
+        }
+
+    }
+    public void writePreferences() {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("location", city);
+        editor.commit();
+    }
+    public void readPreferences() {
+        city = sharedPref.getString("location", "");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent intent = new Intent(MainActivity.this, FiveDayActivity.class);
+                //intent.putExtra("location", city);
+                startActivity(intent);
+                return true;
+            case R.id.changeZip:
+                showAddItemDialog(this);
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
     private void showAddItemDialog(Context c) {
@@ -58,44 +117,16 @@ public class MainActivity extends Activity {
                     public void onClick(DialogInterface dialog, int which) {
                         String input = String.valueOf(taskEditText.getText());
                         city = input + "," + getApplicationContext().getResources().getConfiguration().locale.getCountry();
-                        pickView(MainActivity.this);
+                        writePreferences();
+                        //pickView(MainActivity.this);
+                        task = new JSONWeatherTask();
+                        task.execute(new String[]{city});
                     }
                 })
                 .setNegativeButton("Cancel", null)
                 .create();
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
-    }
-    private void pickView(Context c) {
-        AlertDialog dialog = new AlertDialog.Builder(c)
-                .setTitle("1 day or 5 day forecast?")
-                .setCancelable(false)
-                .setPositiveButton("5 day forecast", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Toast toast = Toast.makeText(getApplicationContext(), "To be implemented", Toast.LENGTH_LONG);
-                        toast.show();
-                        Intent intent = new Intent(MainActivity.this, FiveDayActivity.class);
-                        intent.putExtra("location", city);
-                        startActivity(intent);
-                    }
-                })
-                .setNegativeButton("1 day forecast", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                        task = new JSONWeatherTask();
-                        task.execute(new String[]{city});
-                        Toast toast3 = Toast.makeText(getApplicationContext(), city, Toast.LENGTH_LONG);
-                        toast3.show();
-                    }
-                })
-                .create();
-        dialog.show();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
     }
 
     private class JSONWeatherTask extends AsyncTask<String, Void, Weather> {

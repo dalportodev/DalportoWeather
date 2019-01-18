@@ -6,14 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import tech.dalporto.dalportoweather.model.Weather;
-
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     //private String[] mDataset;
     private ArrayList<Weather> mDataset;
-
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -24,13 +23,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         public ImageView imgView;
         public TextView descTextView;
         public TextView tempTextView;
+        public TextView dateTimeTextView;
 
         public MyViewHolder(View v) {
             super(v);
             mTextView = v;
             descTextView = itemView.findViewById(R.id.descriptionTextView);
             tempTextView = itemView.findViewById(R.id.tempTextView);
-
+            dateTimeTextView = itemView.findViewById(R.id.dateTextView);
+            imgView = itemView.findViewById(R.id.imageView);
         }
     }
 
@@ -44,7 +45,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                      int viewType) {
         // create a new view
-        TextView v = (TextView) LayoutInflater.from(parent.getContext())
+        View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.forecast_item, parent, false);
 
         MyViewHolder vh = new MyViewHolder(v);
@@ -58,7 +59,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         // - replace the contents of the view with that element
         holder.descTextView.setText(mDataset.get(position).currentCondition.getDescr());
         holder.tempTextView.setText(String.valueOf(mDataset.get(position).temperature.getTemp()));
-
+        holder.dateTimeTextView.setText(String.valueOf(mDataset.get(position).currentCondition.getTime()));
+        String iconUrl = "http://openweathermap.org/img/w/" + mDataset.get(position).currentCondition.getIcon() + ".png";
+        Picasso.get().load(iconUrl).into(holder.imgView);
 
     }
 

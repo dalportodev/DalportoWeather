@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import tech.dalporto.dalportoweather.model.Location;
 import tech.dalporto.dalportoweather.model.Weather;
 
-
 public class JSONForecastParser {
 
     public static ArrayList<Weather> getWeather(String data) throws JSONException  {
@@ -21,15 +20,6 @@ public class JSONForecastParser {
         }
 
         Location loc = new Location();
-
-        JSONObject coordObj = getObject("coord", jObj);
-        loc.setLatitude(getFloat("lat", coordObj));
-        loc.setLongitude(getFloat("lon", coordObj));
-
-        JSONObject sysObj = getObject("sys", jObj);
-        loc.setCountry(getString("country", sysObj));
-        loc.setCity(getString("name", jObj));
-
         JSONArray list = jObj.getJSONArray("list");
 
         for (int i = 0; i < list.length(); i++) {
@@ -37,6 +27,7 @@ public class JSONForecastParser {
             temp.location = loc;
             JSONObject item = list.getJSONObject(i);
 
+            temp.currentCondition.setTime(getString("dt_txt", item));
             JSONArray jArr = item.getJSONArray("weather");
 
             JSONObject JSONWeather = jArr.getJSONObject(0);
@@ -60,10 +51,8 @@ public class JSONForecastParser {
             temp.clouds.setPerc(getInt("all", cObj));
             weather.add(temp);
         }
-
         return weather;
     }
-
 
     private static JSONObject getObject(String tagName, JSONObject jObj)  throws JSONException {
         JSONObject subObj = jObj.getJSONObject(tagName);
@@ -81,5 +70,4 @@ public class JSONForecastParser {
     private static int  getInt(String tagName, JSONObject jObj) throws JSONException {
         return jObj.getInt(tagName);
     }
-
 }

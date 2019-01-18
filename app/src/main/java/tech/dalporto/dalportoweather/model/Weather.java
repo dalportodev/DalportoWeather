@@ -10,6 +10,7 @@ public class Weather {
     public Snow snow = new Snow()	;
     public Clouds clouds = new Clouds();
     public String iconData;
+    public String time;
 
     public  class CurrentCondition {
         private int weatherId;
@@ -18,6 +19,9 @@ public class Weather {
         private String icon;
         private float pressure;
         private float humidity;
+
+        public String getTime() {return time;}
+        public void setTime(String newTime) {time = newTime;}
 
         public int getWeatherId() {
             return weatherId;

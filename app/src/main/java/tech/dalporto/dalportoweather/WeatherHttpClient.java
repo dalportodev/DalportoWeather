@@ -18,36 +18,24 @@ public class WeatherHttpClient {
         String returnVal;
         try {
             if (duration.equals("forecast")) {
-
-                con = (HttpURLConnection) (new URL(BASE_URL + "forecast?zip="  + location + "&units=imperial" + "API KEY HERE")).openConnection();
-                con.setRequestMethod("GET");
-                con.setDoInput(true);
-                con.setDoOutput(true);
-                con.connect();
-
-                StringBuffer buffer = new StringBuffer();
-                is = con.getInputStream();
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                String line;
-                while (  (line = br.readLine()) != null )
-                    buffer.append(line + "\r\n");
-                returnVal = buffer.toString();
-
+                con = (HttpURLConnection) (new URL(BASE_URL + "forecast?zip="  +
+                        location + "&units=imperial" + "&APPID=")).openConnection();
             } else {
-                con = (HttpURLConnection) (new URL(BASE_URL + "weather?zip=" + location + "&units=imperial" + "API KEY HERE")).openConnection();
-                con.setRequestMethod("GET");
-                con.setDoInput(true);
-                con.setDoOutput(true);
-                con.connect();
-
-                StringBuffer buffer = new StringBuffer();
-                is = con.getInputStream();
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                String line;
-                while (  (line = br.readLine()) != null )
-                    buffer.append(line + "\r\n");
-                returnVal = buffer.toString();
+                con = (HttpURLConnection) (new URL(BASE_URL + "weather?zip=" +
+                        location + "&units=imperial" + "&APPID=")).openConnection();
             }
+            con.setRequestMethod("GET");
+            con.setDoInput(true);
+            con.setDoOutput(true);
+            con.connect();
+
+            StringBuffer buffer = new StringBuffer();
+            is = con.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String line;
+            while (  (line = br.readLine()) != null )
+                buffer.append(line + "\r\n");
+            returnVal = buffer.toString();
 
             is.close();
             con.disconnect();

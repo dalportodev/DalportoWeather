@@ -3,7 +3,6 @@ package tech.dalporto.dalportoweather;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import tech.dalporto.dalportoweather.model.Location;
 import tech.dalporto.dalportoweather.model.Weather;
 
@@ -17,7 +16,6 @@ public class JSONWeatherParser {
         if (data != null) {
             jObj = new JSONObject(data);
         }
-
         // We start extracting the info
         Location loc = new Location();
 
