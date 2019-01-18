@@ -46,10 +46,9 @@ public class FiveDayActivity extends AppCompatActivity {
         sharedPref = context.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
 
         readPreferences();
-        //Intent intent = getIntent();
-        //city = intent.getStringExtra("location");
         task = new JSONWeatherTask();
         task.execute(new String[]{city});
+
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -76,7 +75,6 @@ public class FiveDayActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 Intent intent = new Intent(FiveDayActivity.this, MainActivity.class);
-                //intent.putExtra("location", city);
                 startActivity(intent);
                 return true;
             case R.id.changeZip:

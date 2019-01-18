@@ -47,13 +47,6 @@ public class MainActivity extends AppCompatActivity {
         Context context = this;
         sharedPref = context.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
 
-        //Intent intent = getIntent();
-        //if (intent.hasExtra("location")) {
-          //  city = intent.getStringExtra("location");
-            //task = new JSONWeatherTask();
-            //task.execute(new String[]{city});
-        //}
-
         cityText = findViewById(R.id.cityText);
         condDescr = findViewById(R.id.condDescr);
         temp = findViewById(R.id.temp);
@@ -92,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 Intent intent = new Intent(MainActivity.this, FiveDayActivity.class);
-                //intent.putExtra("location", city);
                 startActivity(intent);
                 return true;
             case R.id.changeZip:
