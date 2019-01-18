@@ -74,8 +74,7 @@ public class FiveDayActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Intent intent = new Intent(FiveDayActivity.this, MainActivity.class);
-                startActivity(intent);
+                NavUtils.navigateUpFromSameTask(this);
                 return true;
             case R.id.changeZip:
                 showAddItemDialog(this);
