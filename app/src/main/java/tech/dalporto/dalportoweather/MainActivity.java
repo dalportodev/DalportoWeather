@@ -35,13 +35,14 @@ public class MainActivity extends AppCompatActivity {
     private String city = "";
     private JSONWeatherTask task;
     private SharedPreferences sharedPref;
+    private Toolbar myToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
         Context context = this;
@@ -144,11 +145,11 @@ public class MainActivity extends AppCompatActivity {
                 iconUrl = "http://openweathermap.org/img/w/" + weather.currentCondition.getIcon() + ".png";
                 Picasso.get().load(iconUrl).into(imgView);
 
-                cityText.setText(weather.location.getCity() + "," + weather.location.getCountry());
+                myToolbar.setTitle(weather.getCity() + ", " + weather.getCountry());
+                cityText.setText(weather.getCity() + ", " + weather.getCountry());
                 condDescr.setText(weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
                 temp.setText("" + Math.round((weather.temperature.getTemp())) + "f");
                 hum.setText("" + weather.currentCondition.getHumidity() + "%");
-                //press.setText(getApplicationContext().getResources().getConfiguration().locale.getCountry());
                 windSpeed.setText("" + weather.wind.getSpeed() + " mps");
                 windDeg.setText("" + weather.wind.getDeg() + "�");
             } else {

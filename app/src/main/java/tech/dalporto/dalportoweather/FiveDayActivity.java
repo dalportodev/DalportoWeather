@@ -30,13 +30,14 @@ public class FiveDayActivity extends AppCompatActivity {
     private String city = "";
     private JSONWeatherTask task;
     private SharedPreferences sharedPref;
+    private Toolbar myToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_five_day);
 
-        Toolbar myToolbar = findViewById(R.id.toolbar_forecast);
+        myToolbar = findViewById(R.id.toolbar_forecast);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -138,6 +139,7 @@ public class FiveDayActivity extends AppCompatActivity {
             mAdapter = new MyAdapter(weather);
             mRecyclerView.setAdapter(mAdapter);
             task.cancel(true);
+            myToolbar.setTitle(weather.get(0).getCity() + ", " + weather.get(0).getCountry() + " Forecast");
         }
     }
 }

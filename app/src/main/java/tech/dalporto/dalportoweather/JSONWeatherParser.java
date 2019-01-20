@@ -3,7 +3,7 @@ package tech.dalporto.dalportoweather;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import tech.dalporto.dalportoweather.model.Location;
+
 import tech.dalporto.dalportoweather.model.Weather;
 
 public class JSONWeatherParser {
@@ -16,19 +16,17 @@ public class JSONWeatherParser {
         if (data != null) {
             jObj = new JSONObject(data);
         }
-        // We start extracting the info
-        Location loc = new Location();
 
         JSONObject coordObj = getObject("coord", jObj);
-        loc.setLatitude(getFloat("lat", coordObj));
-        loc.setLongitude(getFloat("lon", coordObj));
+        weather.setLatitude(getFloat("lat", coordObj));
+        weather.setLongitude(getFloat("lon", coordObj));
 
         JSONObject sysObj = getObject("sys", jObj);
-        loc.setCountry(getString("country", sysObj));
-        loc.setSunrise(getInt("sunrise", sysObj));
-        loc.setSunset(getInt("sunset", sysObj));
-        loc.setCity(getString("name", jObj));
-        weather.location = loc;
+        weather.setCountry(getString("country", sysObj));
+        weather.setSunrise(getInt("sunrise", sysObj));
+        weather.setSunset(getInt("sunset", sysObj));
+        weather.setCity(getString("name", jObj));
+
 
         // We get weather info (This is an array)
         JSONArray jArr = jObj.getJSONArray("weather");

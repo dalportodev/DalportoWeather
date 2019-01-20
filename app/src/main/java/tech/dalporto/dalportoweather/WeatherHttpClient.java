@@ -19,10 +19,10 @@ public class WeatherHttpClient {
         try {
             if (duration.equals("forecast")) {
                 con = (HttpURLConnection) (new URL(BASE_URL + "forecast?zip="  +
-                        location + "&units=imperial" + "&APPID=60c84d19fabbdbf8c8c944fc7a50cd09")).openConnection();
+                        location + "&units=imperial" + "&APPID=")).openConnection();
             } else {
                 con = (HttpURLConnection) (new URL(BASE_URL + "weather?zip=" +
-                        location + "&units=imperial" + "&APPID=60c84d19fabbdbf8c8c944fc7a50cd09")).openConnection();
+                        location + "&units=imperial" + "&APPID=")).openConnection();
             }
             con.setRequestMethod("GET");
             con.setDoInput(true);

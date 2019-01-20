@@ -6,7 +6,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import tech.dalporto.dalportoweather.model.Location;
 import tech.dalporto.dalportoweather.model.Weather;
 
 public class JSONForecastParser {
@@ -19,12 +18,19 @@ public class JSONForecastParser {
             jObj = new JSONObject(data);
         }
 
-        Location loc = new Location();
+        //Location loc = new Location();
+
+
         JSONArray list = jObj.getJSONArray("list");
+        JSONObject location = jObj.getJSONObject("city");
+
 
         for (int i = 0; i < list.length(); i++) {
             Weather temp = new Weather();
-            temp.location = loc;
+            //temp.location = loc;
+            temp.setCity(getString("name", location));
+            temp.setCountry(getString("country", location));
+
             JSONObject item = list.getJSONObject(i);
 
             temp.currentCondition.setTime(getString("dt_txt", item));
