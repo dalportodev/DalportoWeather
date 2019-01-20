@@ -4,7 +4,7 @@ public class Weather {
 
     public CurrentCondition currentCondition = new CurrentCondition();
     public Temperature temperature = new Temperature();
-    public Wind wind = new Wind();
+    public Float wind = 0.00f;
     public Rain rain = new Rain();
     public Snow snow = new Snow()	;
     public Clouds clouds = new Clouds();
@@ -17,7 +17,7 @@ public class Weather {
     private String country;
     private String city;
 
-    public  class CurrentCondition {
+    public class CurrentCondition {
         private int weatherId;
         private String condition;
         private String descr;
@@ -91,22 +91,6 @@ public class Weather {
         }
     }
 
-    public  class Wind {
-        private float speed;
-        private float deg;
-        public float getSpeed() {
-            return speed;
-        }
-        public void setSpeed(float speed) {
-            this.speed = speed;
-        }
-        public float getDeg() {
-            return deg;
-        }
-        public void setDeg(float deg) {
-            this.deg = deg;
-        }
-    }
 
     public  class Rain {
         private String time;
@@ -190,5 +174,11 @@ public class Weather {
     }
     public void setCity(String city) {
         this.city = city;
+    }
+    public void setWind(Float wind) {
+        this.wind = wind;
+    }
+    public Float getWind() {
+        return this.wind;
     }
 }

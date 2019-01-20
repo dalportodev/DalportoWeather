@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView temp;
     private TextView press;
     private TextView windSpeed;
-    private TextView windDeg;
     private TextView hum;
     private ImageView imgView;
     private String city = "";
@@ -59,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         temp = findViewById(R.id.temp);
         hum = findViewById(R.id.hum);
         windSpeed = findViewById(R.id.windSpeed);
-        windDeg = findViewById(R.id.windDeg);
         imgView = findViewById(R.id.condIcon);
 
         readPreferences();
@@ -96,10 +94,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.changeZip:
                 showAddItemDialog(this);
                 return true;
-            case R.id.change_country:
+            case R.id.changeCountry:
                 showCountryChangeDialog(this);
                 return true;
-
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -187,11 +184,11 @@ public class MainActivity extends AppCompatActivity {
 
                 myToolbar.setTitle(weather.getCity() + ", " + weather.getCountry());
                 cityText.setText(weather.getCity() + ", " + weather.getCountry());
-                condDescr.setText(weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
-                temp.setText("" + Math.round((weather.temperature.getTemp())) + "f");
-                hum.setText("" + weather.currentCondition.getHumidity() + "%");
-                windSpeed.setText("" + weather.wind.getSpeed() + " mps");
-                windDeg.setText("" + weather.wind.getDeg() + "�");
+                condDescr.setText(weather.currentCondition.getDescr().substring(0,1).toUpperCase() +
+                        weather.currentCondition.getDescr().substring(1));
+                temp.setText("Temp: " + Math.round((weather.temperature.getTemp())) + "F");
+                hum.setText("Humidity: " + weather.currentCondition.getHumidity() + "%");
+                windSpeed.setText("Wind: " + weather.getWind() + " mph");
             } else {
                 Toast toast = Toast.makeText(getApplicationContext(), "Invalid postal code", Toast.LENGTH_LONG);
                 toast.show();

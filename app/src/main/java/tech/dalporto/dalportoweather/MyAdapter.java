@@ -7,7 +7,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import tech.dalporto.dalportoweather.model.Weather;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
@@ -24,6 +30,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         public TextView descTextView;
         public TextView tempTextView;
         public TextView dateTimeTextView;
+        public TextView windTextView;
 
         public MyViewHolder(View v) {
             super(v);
@@ -31,6 +38,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             descTextView = itemView.findViewById(R.id.descriptionTextView);
             tempTextView = itemView.findViewById(R.id.tempTextView);
             dateTimeTextView = itemView.findViewById(R.id.dateTextView);
+            windTextView = itemView.findViewById(R.id.windTextView);
             imgView = itemView.findViewById(R.id.imageView);
         }
     }
@@ -57,12 +65,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public void onBindViewHolder(MyViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.descTextView.setText(mDataset.get(position).currentCondition.getDescr());
-        holder.tempTextView.setText(String.valueOf(mDataset.get(position).temperature.getTemp()));
-        holder.dateTimeTextView.setText(String.valueOf(mDataset.get(position).currentCondition.getTime()));
+        holder.descTextView.setText(mDataset.get(position).currentCondition.getDescr().substring(0,1).toUpperCase() +
+                mDataset.get(position).currentCondition.getDescr().substring(1));
+        holder.tempTextView.setText("Temp: " + String.valueOf((int)mDataset.get(position).temperature.getTemp()) + "F");
+        holder.windTextView.setText("Wind: " + mDataset.get(position).getWind() + "MPH");
+        //holder.dateTimeTextView.setText(String.valueOf(mDataset.get(position).currentCondition.getTime()));
         String iconUrl = "http://openweathermap.org/img/w/" + mDataset.get(position).currentCondition.getIcon() + ".png";
         Picasso.get().load(iconUrl).into(holder.imgView);
 
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = format.parse(String.valueOf(mDataset.get(position).currentCondition.getTime().substring(0, 10)));
+            holder.dateTimeTextView.setText(new SimpleDateFormat("EEE").format(date) + ":");
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)

@@ -34,8 +34,11 @@ public class JSONForecastParser {
             JSONObject item = list.getJSONObject(i);
 
             temp.currentCondition.setTime(getString("dt_txt", item));
-            JSONArray jArr = item.getJSONArray("weather");
 
+            JSONObject wind = getObject("wind", item);
+            temp.setWind(getFloat("speed", wind));
+
+            JSONArray jArr = item.getJSONArray("weather");
             JSONObject JSONWeather = jArr.getJSONObject(0);
             temp.currentCondition.setWeatherId(getInt("id", JSONWeather));
             temp.currentCondition.setDescr(getString("description", JSONWeather));
@@ -48,10 +51,6 @@ public class JSONForecastParser {
             temp.temperature.setMaxTemp(getFloat("temp_max", mainObj));
             temp.temperature.setMinTemp(getFloat("temp_min", mainObj));
             temp.temperature.setTemp(getFloat("temp", mainObj));
-
-            JSONObject wObj = getObject("wind", item);
-            temp.wind.setSpeed(getFloat("speed", wObj));
-            temp.wind.setDeg(getFloat("deg", wObj));
 
             JSONObject cObj = getObject("clouds", item);
             temp.clouds.setPerc(getInt("all", cObj));

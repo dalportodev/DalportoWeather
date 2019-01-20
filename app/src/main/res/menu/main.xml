@@ -6,7 +6,7 @@
         android:title="Change postal/zip code"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/change_country"
+    <item android:id="@+id/changeCountry"
         android:title="Change Country"
         app:showAsAction="never"/>
 
