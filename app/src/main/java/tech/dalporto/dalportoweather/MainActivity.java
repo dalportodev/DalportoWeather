@@ -11,8 +11,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private JSONWeatherTask task;
     private SharedPreferences sharedPref;
     private Toolbar myToolbar;
+    private RecyclerView recyclerViewCountries;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
 
         Context context = this;
         sharedPref = context.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
@@ -90,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.changeZip:
                 showAddItemDialog(this);
                 return true;
+            case R.id.change_country:
+                showCountryChangeDialog(this);
+                return true;
 
             default:
                 // If we got here, the user's action was not recognized.
@@ -97,6 +106,37 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    private void showCountryChangeDialog(Context c) {
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.country_list, null);
+
+        recyclerViewCountries = dialogView.findViewById(R.id.recyclerviewCountryList);
+        recyclerViewCountries.setHasFixedSize(true);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        recyclerViewCountries.setLayoutManager(mLayoutManager);
+        RecyclerView.Adapter mAdapter = new CountryListAdapter(Util.countryList.getCountries());
+        recyclerViewCountries.setAdapter(mAdapter);
+
+
+        AlertDialog dialog = new AlertDialog.Builder(c)
+                .setTitle("Enter Co code")
+                .setView(dialogView)
+                .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //String input = String.valueOf(taskEditText.getText());
+                        //city = input + "," + getApplicationContext().getResources().getConfiguration().locale.getCountry();
+                        writePreferences();
+                        task = new JSONWeatherTask();
+                        task.execute(new String[]{city});
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     private void showAddItemDialog(Context c) {
