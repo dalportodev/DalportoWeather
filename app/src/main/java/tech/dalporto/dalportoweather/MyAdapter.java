@@ -71,7 +71,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 mDataset.get(position).currentCondition.getDescr().substring(1) + ",");
         */
 
-        if (mDataset.get(0).getCity().equals("US")) {
+        if (mDataset.get(0).getCountry().equals("US")) {
             holder.tempTextView.setText("Temp: " + String.valueOf((int)mDataset.get(position).temperature.getTemp()) + "F,");
         } else {
             holder.tempTextView.setText("Temp: " + String.valueOf((int)mDataset.get(position).temperature.getTemp()) + "C,");
