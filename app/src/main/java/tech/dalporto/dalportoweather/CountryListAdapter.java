@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -57,18 +58,24 @@ public class CountryListAdapter extends RecyclerView.Adapter<CountryListAdapter.
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String input = String.valueOf(taskEditText.getText() + "," + newCountry);
-                        SharedPreferences sharedPref = c.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPref.edit();
-                        editor.putString("location", input);
-                        Toast toast = Toast.makeText(c, input, Toast.LENGTH_LONG);
-                        toast.show();
-                        editor.commit();
-                        Intent intent = new Intent(c, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        c.startActivity(intent);
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
 
-
-                    }
+                            if (((new WeatherHttpClient()).getWeatherData(input, "weather", newCountry)) != null) {
+                                SharedPreferences sharedPref = c.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putString("location", input);
+                                editor.commit();
+                                dialog.dismiss();// added to fix MainActivity has leaked window error
+                                Intent intent = new Intent(c, MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                c.startActivity(intent);
+                            } else {
+                                Toast toast = Toast.makeText(c, input + " invalid, try again", Toast.LENGTH_SHORT);
+                                toast.show();
+                                showAddItemDialog(c, newCountry);
+                            }
+                        }
                 })
                 .setNegativeButton("Cancel", null)
                 .create();
