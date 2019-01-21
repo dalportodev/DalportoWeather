@@ -2,6 +2,7 @@ package tech.dalporto.dalportoweather;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class Util {
     public static class countryList {
@@ -20,6 +21,7 @@ public class Util {
                         "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW")
         );
         public static ArrayList<String> getCountries() {
+            Collections.sort(cList);
             return cList;
         }
     }

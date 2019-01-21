@@ -12,8 +12,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -31,6 +33,7 @@ public class FiveDayActivity extends AppCompatActivity {
     private JSONWeatherTask task;
     private SharedPreferences sharedPref;
     private Toolbar myToolbar;
+    private RecyclerView recyclerViewCountries;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +83,9 @@ public class FiveDayActivity extends AppCompatActivity {
             case R.id.changeZip:
                 showAddItemDialog(this);
                 return true;
+            case R.id.changeCountry:
+                showCountryChangeDialog(this);
+                return true;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
@@ -92,28 +98,77 @@ public class FiveDayActivity extends AppCompatActivity {
         }
     }
 
-    private void showAddItemDialog(Context c) {
-        final EditText taskEditText = new EditText(c);
+    private void showCountryChangeDialog(Context c) {
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.country_list, null);
+
+        recyclerViewCountries = dialogView.findViewById(R.id.recyclerviewCountryList);
+        recyclerViewCountries.setHasFixedSize(true);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        recyclerViewCountries.setLayoutManager(mLayoutManager);
+        RecyclerView.Adapter mAdapter = new CountryListAdapter(Util.countryList.getCountries());
+        recyclerViewCountries.setAdapter(mAdapter);
+
         AlertDialog dialog = new AlertDialog.Builder(c)
-                .setTitle("Enter zip code")
-                .setView(taskEditText)
+                .setTitle("Enter Co code")
+                .setView(dialogView)
                 .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String input = String.valueOf(taskEditText.getText());
-                        city = input + "," + getApplicationContext().getResources().getConfiguration().locale.getCountry();
+                        //String input = String.valueOf(taskEditText.getText());
+                        //city = input + "," + getApplicationContext().getResources().getConfiguration().locale.getCountry();
                         writePreferences();
-                        if (task.isCancelled()) {
-                            task = new JSONWeatherTask();
-                            task.execute(new String[]{city});
-                        } else {
-                            Toast toast = Toast.makeText(getApplicationContext(), "Task not completed!", Toast.LENGTH_LONG);
-                            toast.show();
-                        }
+                        task = new JSONWeatherTask();
+                        task.execute(new String[]{city});
                     }
                 })
                 .setNegativeButton("Cancel", null)
                 .create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+    }
+
+    private void showAddItemDialog(Context c) {
+        final EditText taskEditText = new EditText(c);
+        String dialogText;
+        if (!city.equals("")) {
+            if (city.substring(city.length() - 2, city.length()).equals("US")) {
+                dialogText = "Enter zip code";
+            } else {
+                dialogText = "Enter full city name";
+            }
+        } else {
+            if (getApplicationContext().getResources().getConfiguration().locale.getCountry().equals("US")) {
+                dialogText = "Enter zip code";
+            } else {
+                dialogText = "Enter full city name";
+            }
+        }
+        final String temp = dialogText;
+        AlertDialog dialog = new AlertDialog.Builder(c)
+                .setTitle(dialogText)
+                .setView(taskEditText)
+                .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String input = String.valueOf(taskEditText.getText()).replaceAll("\\s","");
+                        if (temp.equals("Enter zip code")) {
+                            city = input + "," + "US";
+                        } else {
+                            if (city.equals("")) {
+                                city = input + "," + getApplicationContext().getResources().getConfiguration().locale.getCountry();
+                            } else {
+                                city = input + "," + city.substring(city.length() - 2, city.length());
+                            }
+                        }
+                        writePreferences();
+                        task = new JSONWeatherTask();
+                        task.execute(new String[]{city});
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
 
@@ -122,7 +177,7 @@ public class FiveDayActivity extends AppCompatActivity {
         @Override
         protected ArrayList<Weather> doInBackground(String... params) {
             ArrayList<Weather> weather = new ArrayList<>();
-            String data = ((new WeatherHttpClient()).getWeatherData(params[0], "forecast"));
+            String data = ((new WeatherHttpClient()).getWeatherData(params[0], "forecast", city.substring(city.length() - 2, city.length())));
             try {
                     weather = JSONForecastParser.getWeather(data);
 

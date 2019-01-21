@@ -11,18 +11,28 @@ public class WeatherHttpClient {
     private static String BASE_URL = "http://api.openweathermap.org/data/2.5/";
 
 
-    public String getWeatherData(String location, String duration) {
+    public String getWeatherData(String location, String duration, String country) {
 
         HttpURLConnection con = null ;
         InputStream is = null;
         String returnVal;
         try {
-            if (duration.equals("forecast")) {
-                con = (HttpURLConnection) (new URL(BASE_URL + "forecast?zip="  +
-                        location + "&units=imperial" + "&APPID=")).openConnection();
+            if (country.equals("US")) {
+                if (duration.equals("forecast")) {
+                    con = (HttpURLConnection) (new URL(BASE_URL + "forecast?zip=" +
+                            location + "&units=imperial" + "&APPID=")).openConnection();
+                } else {
+                    con = (HttpURLConnection) (new URL(BASE_URL + "weather?zip=" +
+                            location + "&units=imperial" + "&APPID=")).openConnection();
+                }
             } else {
-                con = (HttpURLConnection) (new URL(BASE_URL + "weather?zip=" +
-                        location + "&units=imperial" + "&APPID=")).openConnection();
+                if (duration.equals("forecast")) {
+                    con = (HttpURLConnection) (new URL(BASE_URL + "forecast?q=" +
+                            location + "&units=metric" + "&APPID=")).openConnection();
+                } else {
+                    con = (HttpURLConnection) (new URL(BASE_URL + "weather?q=" +
+                            location + "&units=metric" + "&APPID=")).openConnection();
+                }
             }
             con.setRequestMethod("GET");
             con.setDoInput(true);

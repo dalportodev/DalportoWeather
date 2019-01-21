@@ -65,9 +65,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public void onBindViewHolder(MyViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
+
+        /* for use in landscape view only (separate layout to be implemented)
         holder.descTextView.setText(mDataset.get(position).currentCondition.getDescr().substring(0,1).toUpperCase() +
-                mDataset.get(position).currentCondition.getDescr().substring(1));
-        holder.tempTextView.setText("Temp: " + String.valueOf((int)mDataset.get(position).temperature.getTemp()) + "F");
+                mDataset.get(position).currentCondition.getDescr().substring(1) + ",");
+        */
+
+        if (mDataset.get(0).getCity().equals("US")) {
+            holder.tempTextView.setText("Temp: " + String.valueOf((int)mDataset.get(position).temperature.getTemp()) + "F,");
+        } else {
+            holder.tempTextView.setText("Temp: " + String.valueOf((int)mDataset.get(position).temperature.getTemp()) + "C,");
+        }
+
+
+
         holder.windTextView.setText("Wind: " + mDataset.get(position).getWind() + "MPH");
         //holder.dateTimeTextView.setText(String.valueOf(mDataset.get(position).currentCondition.getTime()));
         String iconUrl = "http://openweathermap.org/img/w/" + mDataset.get(position).currentCondition.getIcon() + ".png";
@@ -76,7 +87,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date date = format.parse(String.valueOf(mDataset.get(position).currentCondition.getTime().substring(0, 10)));
-            holder.dateTimeTextView.setText(new SimpleDateFormat("EEE").format(date) + ":");
+            holder.dateTimeTextView.setText(new SimpleDateFormat("EEE").format(date));
+            format = new SimpleDateFormat("HH:mm:ss");
+            date = format.parse(mDataset.get(position).currentCondition.getTime().substring(11, mDataset.get(position).currentCondition.getTime().length()));
+            format = new SimpleDateFormat("hh:mm aa");
+            holder.descTextView.setText(format.format(date) + ":");
         }
         catch(Exception e) {
             e.printStackTrace();

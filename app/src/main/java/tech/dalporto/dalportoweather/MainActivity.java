@@ -27,11 +27,9 @@ import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
 
-
     private TextView cityText;
     private TextView condDescr;
     private TextView temp;
-    private TextView press;
     private TextView windSpeed;
     private TextView hum;
     private ImageView imgView;
@@ -48,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
         myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
-
 
         Context context = this;
         sharedPref = context.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
@@ -116,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.Adapter mAdapter = new CountryListAdapter(Util.countryList.getCountries());
         recyclerViewCountries.setAdapter(mAdapter);
 
-
         AlertDialog dialog = new AlertDialog.Builder(c)
                 .setTitle("Enter Co code")
                 .setView(dialogView)
@@ -138,14 +134,37 @@ public class MainActivity extends AppCompatActivity {
 
     private void showAddItemDialog(Context c) {
         final EditText taskEditText = new EditText(c);
+        String dialogText;
+        if (!city.equals("")) {
+            if (city.substring(city.length() - 2, city.length()).equals("US")) {
+                dialogText = "Enter zip code";
+            } else {
+                dialogText = "Enter full city name";
+            }
+        } else {
+            if (getApplicationContext().getResources().getConfiguration().locale.getCountry().equals("US")) {
+                dialogText = "Enter zip code";
+            } else {
+                dialogText = "Enter full city name";
+            }
+        }
+        final String temp = dialogText;
         AlertDialog dialog = new AlertDialog.Builder(c)
-                .setTitle("Enter zip code")
+                .setTitle(dialogText)
                 .setView(taskEditText)
                 .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String input = String.valueOf(taskEditText.getText());
-                        city = input + "," + getApplicationContext().getResources().getConfiguration().locale.getCountry();
+                        String input = String.valueOf(taskEditText.getText()).replaceAll("\\s","");
+                        if (temp.equals("Enter zip code")) {
+                            city = input + "," + "US";
+                        } else {
+                            if (city.equals("")) {
+                                city = input + "," + getApplicationContext().getResources().getConfiguration().locale.getCountry();
+                            } else {
+                                city = input + "," + city.substring(city.length() - 2, city.length());
+                            }
+                        }
                         writePreferences();
                         task = new JSONWeatherTask();
                         task.execute(new String[]{city});
@@ -162,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Weather doInBackground(String... params) {
             Weather weather = new Weather();
-            String data = ((new WeatherHttpClient()).getWeatherData(params[0], "weather"));
+            String data = ((new WeatherHttpClient()).getWeatherData(params[0], "weather", city.substring(city.length() - 2, city.length())));
 
             try {
                 weather = JSONWeatherParser.getWeather(data);
@@ -182,15 +201,19 @@ public class MainActivity extends AppCompatActivity {
                 iconUrl = "http://openweathermap.org/img/w/" + weather.currentCondition.getIcon() + ".png";
                 Picasso.get().load(iconUrl).into(imgView);
 
-                myToolbar.setTitle(weather.getCity() + ", " + weather.getCountry());
+                //myToolbar.setTitle(weather.getCity() + ", " + weather.getCountry());
                 cityText.setText(weather.getCity() + ", " + weather.getCountry());
                 condDescr.setText(weather.currentCondition.getDescr().substring(0,1).toUpperCase() +
                         weather.currentCondition.getDescr().substring(1));
-                temp.setText("Temp: " + Math.round((weather.temperature.getTemp())) + "F");
+                if (city.substring(city.length() - 2, city.length()).equals("US")) {
+                    temp.setText("Temp: " + Math.round((weather.temperature.getTemp())) + "F");
+                } else {
+                    temp.setText("Temp: " + Math.round((weather.temperature.getTemp())) + "C");
+                }
                 hum.setText("Humidity: " + weather.currentCondition.getHumidity() + "%");
                 windSpeed.setText("Wind: " + weather.getWind() + " mph");
             } else {
-                Toast toast = Toast.makeText(getApplicationContext(), "Invalid postal code", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getApplicationContext(), city + " invalid, try again", Toast.LENGTH_LONG);
                 toast.show();
                 showAddItemDialog(MainActivity.this);
             }
