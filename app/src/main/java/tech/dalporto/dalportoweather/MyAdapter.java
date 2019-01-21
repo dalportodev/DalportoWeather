@@ -77,10 +77,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             holder.tempTextView.setText("Temp: " + String.valueOf((int)mDataset.get(position).temperature.getTemp()) + "C,");
         }
 
-
-
         holder.windTextView.setText("Wind: " + mDataset.get(position).getWind() + "MPH");
-        //holder.dateTimeTextView.setText(String.valueOf(mDataset.get(position).currentCondition.getTime()));
         String iconUrl = "http://openweathermap.org/img/w/" + mDataset.get(position).currentCondition.getIcon() + ".png";
         Picasso.get().load(iconUrl).into(holder.imgView);
 

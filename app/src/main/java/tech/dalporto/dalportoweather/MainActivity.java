@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
@@ -119,8 +118,6 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //String input = String.valueOf(taskEditText.getText());
-                        //city = input + "," + getApplicationContext().getResources().getConfiguration().locale.getCountry();
                         writePreferences();
                         task = new JSONWeatherTask();
                         task.execute(new String[]{city});
@@ -201,7 +198,6 @@ public class MainActivity extends AppCompatActivity {
                 iconUrl = "http://openweathermap.org/img/w/" + weather.currentCondition.getIcon() + ".png";
                 Picasso.get().load(iconUrl).into(imgView);
 
-                //myToolbar.setTitle(weather.getCity() + ", " + weather.getCountry());
                 cityText.setText(weather.getCity() + ", " + weather.getCountry());
                 condDescr.setText(weather.currentCondition.getDescr().substring(0,1).toUpperCase() +
                         weather.currentCondition.getDescr().substring(1));

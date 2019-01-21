@@ -2,7 +2,6 @@ package tech.dalporto.dalportoweather;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 public class Util {
     public static class countryList {
@@ -21,34 +20,7 @@ public class Util {
                         "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW")
         );
         public static ArrayList<String> getCountries() {
-            Collections.sort(cList);
             return cList;
-        }
-    }
-    public static class Date {
-        public static String getDayOfWeek(int num) {
-            switch (num) {
-                case 1:
-                    return "Sunday";
-                case 2:
-                    return "Monday";
-                case 3:
-                    return "Tuesday";
-                case 4:
-                    return "Wednesday";
-                case 5:
-                    return "Thursday";
-                case 6:
-                    return "Friday";
-                case 7:
-                    return "Saturday";
-
-                default:
-                    // If we got here, the user's action was not recognized.
-                    // Invoke the superclass to handle it.
-                    return "";
-
-            }
         }
     }
 }
