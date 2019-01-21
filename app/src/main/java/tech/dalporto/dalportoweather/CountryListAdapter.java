@@ -43,8 +43,15 @@ public class CountryListAdapter extends RecyclerView.Adapter<CountryListAdapter.
 
     public static void showAddItemDialog(final Context c, final String newCountry) {
         final EditText taskEditText = new EditText(c);
+        String dialogText;
+
+            if (newCountry.equals("US")) {
+                dialogText = "Enter zip code";
+            } else {
+                dialogText = "Enter full city name";
+            }
         AlertDialog dialog = new AlertDialog.Builder(c)
-                .setTitle("Enter full city name")
+                .setTitle(dialogText)
                 .setView(taskEditText)
                 .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
                     @Override
