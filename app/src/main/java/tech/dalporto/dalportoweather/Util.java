@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Util {
-    public static class countryList {
+    public static class Data {
         public static ArrayList<String> cList = new ArrayList<>(
                 Arrays.asList("AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BH",
                         "BS", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BQ", "BA", "BW", "BV", "BR", "IO", "BN", "BG", "BF", "BI", "KH",
@@ -19,8 +19,13 @@ public class Util {
                         "GS", "SS", "ES", "LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN",
                         "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW")
         );
+        public static String newCountry;
+        public static String getCountry() {return newCountry;}
+        public static void setCountry(String country) {newCountry = country;}
         public static ArrayList<String> getCountries() {
             return cList;
         }
+
+
     }
 }

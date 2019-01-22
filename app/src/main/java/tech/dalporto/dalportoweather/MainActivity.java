@@ -52,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
         myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
-        Context context = this;
-        sharedPref = context.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
+        sharedPref = this.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
 
         cityText = findViewById(R.id.cityText);
         condDescr = findViewById(R.id.condDescr);
@@ -69,15 +68,17 @@ public class MainActivity extends AppCompatActivity {
             task = new JSONWeatherTask();
             task.execute(new String[]{city});
         }
-
     }
     public void writePreferences() {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("location", city);
-        editor.commit(); // test editor.apply() later
+        editor.apply(); // test editor.apply() later
     }
     public void readPreferences() {
         city = sharedPref.getString("location", "");
+        if (!city.equals("")) {
+            Util.Data.setCountry(city.substring(city.length() - 2));
+        }
     }
 
     @Override
@@ -100,8 +101,6 @@ public class MainActivity extends AppCompatActivity {
                 showCountryChangeDialog(this);
                 return true;
             default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
     }
@@ -114,18 +113,17 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewCountries.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerViewCountries.setLayoutManager(mLayoutManager);
-        RecyclerView.Adapter mAdapter = new CountryListAdapter(Util.countryList.getCountries());
+        RecyclerView.Adapter mAdapter = new CountryListAdapter(Util.Data.getCountries());
         recyclerViewCountries.setAdapter(mAdapter);
 
         AlertDialog dialog = new AlertDialog.Builder(c)
-                .setTitle("Enter Co code")
+                .setTitle("Select Co code")
                 .setView(dialogView)
                 .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        writePreferences();
-                        task = new JSONWeatherTask();
-                        task.execute(new String[]{city});
+                        city = city.substring(0, city.length() - 2) + Util.Data.getCountry();
+                        showAddItemDialog(MainActivity.this);
                     }
                 })
                 .setNegativeButton("Cancel", null)
@@ -138,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         final EditText taskEditText = new EditText(c);
         String dialogText;
         if (!city.equals("")) {
-            if (city.substring(city.length() - 2, city.length()).equals("US")) {
+            if (Util.Data.getCountry().equals("US")) {
                 dialogText = "Enter zip code";
             } else {
                 dialogText = "Enter full city name";
@@ -164,10 +162,9 @@ public class MainActivity extends AppCompatActivity {
                             if (city.equals("")) {
                                 city = input + "," + getApplicationContext().getResources().getConfiguration().locale.getCountry();
                             } else {
-                                city = input + "," + city.substring(city.length() - 2, city.length());
+                                city = input + "," + Util.Data.getCountry();
                             }
                         }
-                        writePreferences();
                         task = new JSONWeatherTask();
                         task.execute(new String[]{city});
                     }
@@ -195,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(Weather weather) {
+        protected synchronized void onPostExecute(Weather weather) {
             super.onPostExecute(weather);
             String iconUrl;
 
@@ -213,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 hum.setText("Humidity: " + weather.currentCondition.getHumidity() + "%");
                 windSpeed.setText("Wind: " + weather.getWind() + " mph");
+                writePreferences();
             } else {
                 Toast toast = Toast.makeText(getApplicationContext(), city + " invalid, try again", Toast.LENGTH_LONG);
                 toast.show();

@@ -35,7 +35,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         public MyViewHolder(View v) {
             super(v);
             mTextView = v;
-            descTextView = itemView.findViewById(R.id.descriptionTextView);
+            //descTextView = itemView.findViewById(R.id.descriptionTextView);
             tempTextView = itemView.findViewById(R.id.tempTextView);
             dateTimeTextView = itemView.findViewById(R.id.dateTextView);
             windTextView = itemView.findViewById(R.id.windTextView);
@@ -72,9 +72,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         */
 
         if (mDataset.get(0).getCountry().equals("US")) {
-            holder.tempTextView.setText("Temp: " + String.valueOf((int)mDataset.get(position).temperature.getTemp()) + "F,");
+            holder.tempTextView.setText(String.valueOf((int)mDataset.get(position).temperature.getTemp()) + "F°");
         } else {
-            holder.tempTextView.setText("Temp: " + String.valueOf((int)mDataset.get(position).temperature.getTemp()) + "C,");
+            holder.tempTextView.setText(String.valueOf((int)mDataset.get(position).temperature.getTemp()) + "C°");
         }
 
         holder.windTextView.setText("Wind: " + mDataset.get(position).getWind() + "MPH");
@@ -84,11 +84,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date date = format.parse(String.valueOf(mDataset.get(position).currentCondition.getTime().substring(0, 10)));
-            holder.dateTimeTextView.setText(new SimpleDateFormat("EEE").format(date));
+            //  holder.dateTimeTextView.setText(new SimpleDateFormat("EEE").format(date));
+            String dayOfWeek = new SimpleDateFormat("EEE").format(date);
             format = new SimpleDateFormat("HH:mm:ss");
             date = format.parse(mDataset.get(position).currentCondition.getTime().substring(11, mDataset.get(position).currentCondition.getTime().length()));
             format = new SimpleDateFormat("hh:mm aa");
-            holder.descTextView.setText(format.format(date) + ":");
+            holder.dateTimeTextView.setText(dayOfWeek + " " + format.format(date));
         }
         catch(Exception e) {
             e.printStackTrace();

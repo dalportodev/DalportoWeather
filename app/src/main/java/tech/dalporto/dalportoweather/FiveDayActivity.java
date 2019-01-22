@@ -2,13 +2,14 @@ package tech.dalporto.dalportoweather;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.StrictMode;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -40,14 +41,16 @@ public class FiveDayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_five_day);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().detectAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         myToolbar = findViewById(R.id.toolbar_forecast);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mRecyclerView = findViewById(R.id.my_recycler_view);
 
-        Context context = this;
-        sharedPref = context.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
+        sharedPref = this.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
 
         readPreferences();
         task = new JSONWeatherTask();
@@ -58,18 +61,19 @@ public class FiveDayActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
     }
 
-    public void writePreferences() {
-        SharedPreferences.Editor editor = sharedPref.edit();
+    public synchronized void writePreferences() {
+        SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences(
+                "tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE).edit();
         editor.putString("location", city);
-        editor.commit();
+        editor.apply();
     }
-    public void readPreferences() {
-        city = sharedPref.getString("location", "");
+    public synchronized void readPreferences() {
+        city = getApplicationContext().getSharedPreferences(
+                "tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE).getString("location", "");
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -91,10 +95,7 @@ public class FiveDayActivity extends AppCompatActivity {
                 return true;
 
             default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
@@ -106,20 +107,20 @@ public class FiveDayActivity extends AppCompatActivity {
         recyclerViewCountries.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerViewCountries.setLayoutManager(mLayoutManager);
-        RecyclerView.Adapter mAdapter = new CountryListAdapter(Util.countryList.getCountries());
+
+        RecyclerView.Adapter mAdapter = new CountryListAdapter(Util.Data.getCountries());
         recyclerViewCountries.setAdapter(mAdapter);
 
         AlertDialog dialog = new AlertDialog.Builder(c)
-                .setTitle("Enter Co code")
+                .setTitle("Select Co code")
                 .setView(dialogView)
                 .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //String input = String.valueOf(taskEditText.getText());
-                        //city = input + "," + getApplicationContext().getResources().getConfiguration().locale.getCountry();
-                        writePreferences();
-                        task = new JSONWeatherTask();
-                        task.execute(new String[]{city});
+                            city = city.substring(0, city.length() - 2) + Util.Data.getCountry();
+                            showAddItemDialog(FiveDayActivity.this);
+
+
                     }
                 })
                 .setNegativeButton("Cancel", null)
@@ -132,7 +133,7 @@ public class FiveDayActivity extends AppCompatActivity {
         final EditText taskEditText = new EditText(c);
         String dialogText;
         if (!city.equals("")) {
-            if (city.substring(city.length() - 2, city.length()).equals("US")) {
+            if (Util.Data.getCountry().equals("US")) {
                 dialogText = "Enter zip code";
             } else {
                 dialogText = "Enter full city name";
@@ -158,10 +159,9 @@ public class FiveDayActivity extends AppCompatActivity {
                             if (city.equals("")) {
                                 city = input + "," + getApplicationContext().getResources().getConfiguration().locale.getCountry();
                             } else {
-                                city = input + "," + city.substring(city.length() - 2, city.length());
+                                city = input + "," + Util.Data.getCountry();
                             }
                         }
-                        writePreferences();
                         task = new JSONWeatherTask();
                         task.execute(new String[]{city});
                     }
@@ -191,10 +191,16 @@ public class FiveDayActivity extends AppCompatActivity {
         protected void onPostExecute(ArrayList<Weather> weather) {
             super.onPostExecute(weather);
 
-            mAdapter = new MyAdapter(weather);
-            mRecyclerView.setAdapter(mAdapter);
-            task.cancel(true);
-            myToolbar.setTitle(weather.get(0).getCity() + ", " + weather.get(0).getCountry() + " Forecast");
+            try {
+                mAdapter = new MyAdapter(weather);
+                mRecyclerView.setAdapter(mAdapter);
+                task.cancel(true);
+                myToolbar.setTitle(weather.get(0).getCity() + ", " + weather.get(0).getCountry() + " Forecast");
+            } catch (Exception e) {
+                Toast toast = Toast.makeText(getApplicationContext(), city + " invalid, try again", Toast.LENGTH_LONG);
+                toast.show();
+                showAddItemDialog(FiveDayActivity.this);
+            }
         }
     }
 }

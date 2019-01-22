@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +19,9 @@ import java.util.ArrayList;
 
 public class CountryListAdapter extends RecyclerView.Adapter<CountryListAdapter.MyViewHolder> {
     public static ArrayList<String> mDataset;
+    public static boolean clicked = false;
+    public static MyViewHolder vhClicked;
+    public static TextView lastClicked;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -38,8 +42,26 @@ public class CountryListAdapter extends RecyclerView.Adapter<CountryListAdapter.
         public void onClick(View v) {
             //Toast toast = Toast.makeText(v.getContext(), mDataset.get(getAdapterPosition()), Toast.LENGTH_LONG);
             //toast.show();
-            showAddItemDialog(v.getContext(), mDataset.get(getAdapterPosition()));
-        }
+            vhClicked = new MyViewHolder(v);
+
+            if (!clicked) {
+                lastClicked = vhClicked.country;
+                lastClicked.setTypeface(null, Typeface.BOLD);
+                Util.Data.setCountry(lastClicked.getText().toString());
+                clicked = true;
+            } else {
+                lastClicked.setTypeface(null, Typeface.NORMAL);
+                lastClicked = vhClicked.country;
+                lastClicked.setTypeface(null, Typeface.BOLD);
+                Util.Data.setCountry(lastClicked.getText().toString());
+            }
+
+            }
+
+
+
+            //showAddItemDialog(v.getContext(), mDataset.get(getAdapterPosition()));
+
     }
 
     public static void showAddItemDialog(final Context c, final String newCountry) {
@@ -57,19 +79,21 @@ public class CountryListAdapter extends RecyclerView.Adapter<CountryListAdapter.
                 .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String input = String.valueOf(taskEditText.getText() + "," + newCountry);
+                        String input = String.valueOf(taskEditText.getText().toString().replaceAll("\\s", "") + "," + newCountry);
                         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                         StrictMode.setThreadPolicy(policy);
 
-                            if (((new WeatherHttpClient()).getWeatherData(input, "weather", newCountry)) != null) {
+                            if (((new WeatherHttpClient()).getWeatherData(input.substring(0, input.length() - 3) , "weather", newCountry)) != null) {
                                 SharedPreferences sharedPref = c.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.putString("location", input);
                                 editor.commit();
-                                dialog.dismiss();// added to fix MainActivity has leaked window error
+
                                 Intent intent = new Intent(c, MainActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                dialog.dismiss();// added to fix MainActivity has leaked window error
                                 c.startActivity(intent);
+
                             } else {
                                 Toast toast = Toast.makeText(c, input + " invalid, try again", Toast.LENGTH_SHORT);
                                 toast.show();
