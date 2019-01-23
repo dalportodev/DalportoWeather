@@ -84,14 +84,14 @@ public class CountryListAdapter extends RecyclerView.Adapter<CountryListAdapter.
                         StrictMode.setThreadPolicy(policy);
 
                             if (((new WeatherHttpClient()).getWeatherData(input.substring(0, input.length() - 3) , "weather", newCountry)) != null) {
-                                SharedPreferences sharedPref = c.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = sharedPref.edit();
-                                editor.putString("location", input);
-                                editor.commit();
-
+                                //SharedPreferences sharedPref = c.getSharedPreferences("tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE);
+                                //SharedPreferences.Editor editor = sharedPref.edit();
+                                //editor.putString("location", input);
+                                //editor.commit();
+                                Util.Data.setnewCity(taskEditText.getText().toString().replaceAll("\\s", ""));
                                 Intent intent = new Intent(c, MainActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                dialog.dismiss();// added to fix MainActivity has leaked window error
+                                //dialog.dismiss();// added to fix MainActivity has leaked window error
                                 c.startActivity(intent);
 
                             } else {

@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
@@ -18,6 +19,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,8 +49,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // added this because in alertdialog in CountryListAdapter sets to permitAll()
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().detectAll().build();
-        StrictMode.setThreadPolicy(policy);
+        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().detectAll().build();
+        //StrictMode.setThreadPolicy(policy);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+        }
 
         myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
@@ -77,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     public void readPreferences() {
         city = sharedPref.getString("location", "");
         if (!city.equals("")) {
+            Util.Data.setnewCity(city.substring(0, city.length() - 3));
             Util.Data.setCountry(city.substring(city.length() - 2));
         }
     }
@@ -204,9 +215,9 @@ public class MainActivity extends AppCompatActivity {
                 condDescr.setText(weather.currentCondition.getDescr().substring(0,1).toUpperCase() +
                         weather.currentCondition.getDescr().substring(1));
                 if (city.substring(city.length() - 2, city.length()).equals("US")) {
-                    temp.setText("Temp: " + Math.round((weather.temperature.getTemp())) + "F");
+                    temp.setText("Temp: " + Math.round((weather.temperature.getTemp())) + "F°");
                 } else {
-                    temp.setText("Temp: " + Math.round((weather.temperature.getTemp())) + "C");
+                    temp.setText("Temp: " + Math.round((weather.temperature.getTemp())) + "C°");
                 }
                 hum.setText("Humidity: " + weather.currentCondition.getHumidity() + "%");
                 windSpeed.setText("Wind: " + weather.getWind() + " mph");

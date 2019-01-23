@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.StrictMode;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
@@ -17,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -41,8 +44,15 @@ public class FiveDayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_five_day);
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().detectAll().build();
-        StrictMode.setThreadPolicy(policy);
+        //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().detectAll().build();
+        //StrictMode.setThreadPolicy(policy);
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+        }
 
         myToolbar = findViewById(R.id.toolbar_forecast);
         setSupportActionBar(myToolbar);
@@ -68,8 +78,11 @@ public class FiveDayActivity extends AppCompatActivity {
         editor.apply();
     }
     public synchronized void readPreferences() {
-        city = getApplicationContext().getSharedPreferences(
-                "tech.dalporto.dalportoweather.PREFERENCES", Context.MODE_PRIVATE).getString("location", "");
+        city = sharedPref.getString("location", "");
+        if (!city.equals("")) {
+            Util.Data.setnewCity(city.substring(0, city.length() - 3));
+            Util.Data.setCountry(city.substring(city.length() - 2));
+        }
     }
 
     @Override
@@ -196,6 +209,8 @@ public class FiveDayActivity extends AppCompatActivity {
                 mRecyclerView.setAdapter(mAdapter);
                 task.cancel(true);
                 myToolbar.setTitle(weather.get(0).getCity() + ", " + weather.get(0).getCountry() + " Forecast");
+                writePreferences();
+                Util.Data.setnewCity(weather.get(0).getCity());
             } catch (Exception e) {
                 Toast toast = Toast.makeText(getApplicationContext(), city + " invalid, try again", Toast.LENGTH_LONG);
                 toast.show();

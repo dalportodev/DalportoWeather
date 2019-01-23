@@ -20,6 +20,9 @@ public class Util {
                         "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM", "UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW")
         );
         public static String newCountry;
+        public static String newCity;
+        public static String getnewCity() {return newCity;}
+        public static void setnewCity(String city) {newCity = city;}
         public static String getCountry() {return newCountry;}
         public static void setCountry(String country) {newCountry = country;}
         public static ArrayList<String> getCountries() {
